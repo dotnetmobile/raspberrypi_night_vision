@@ -23,7 +23,7 @@ height_backside = 25;
 deepth_backside = 20;
 offset_x_backside = -width_backside/2;
 offset_y_backside = -height_backside/2;
-offset_z_backside = 10;
+offset_z_backside = 0;
 
 map_cube_x = 33;
 map_cube_y = 16;
@@ -71,8 +71,7 @@ module night_vision_camera()
 }
 
 module front_side()
-{
-    
+{   
     difference() 
     {
         linear_extrude(height=2)
@@ -83,6 +82,14 @@ module front_side()
         linear_extrude(height=8) 
         night_vision_camera();
     }
+}
+
+module slots()
+{
+    translate([offset_x_backside-6,offset_y_backside+10,offset_z_backside])
+    cube([5,4,3]);
+    translate([-offset_x_backside,offset_y_backside+10,offset_z_backside])
+    cube([5,4,3]);
 }
 
 module clipsing_pilar()
@@ -146,7 +153,7 @@ module back_side_case()
     }
 }
 
-module extern_nape_cube()
+module extern_map_cube()
 {
     translate([-map_cube_x/2-4,offset_y_backside*2.6,offset_z_backside+3]) 
     {
@@ -156,11 +163,10 @@ module extern_nape_cube()
     }
 }
 
-module intern_nape_cube()
+module intern_map_cube()
 {
         translate([-map_cube_x/2 -4 + 3.5,offset_y_backside*2.7,offset_z_backside+5]) 
         {
-     //       scale(0.8)
             cube([map_cube_x,map_cube_y*2.5,map_cube_z*0.7]);
         }
 }
@@ -169,8 +175,8 @@ module nape_case()
 {
     difference()
     {
-        extern_nape_cube();
-        intern_nape_cube();
+        extern_map_cube();
+        intern_map_cube();
     }
 }
 
@@ -180,7 +186,7 @@ module night_vision_without_nape()
     {   back_side_case();
         
         // open the case for including the nape
-        extern_nape_cube();
+        extern_map_cube();
     }
 }
 
@@ -190,5 +196,16 @@ module night_vision_with_nape()
     nape_case();
 }
 
+module night_vision_with_nape_and_holes()
+{
+    difference()
+    {
+        night_vision_with_nape();
+        slots();
+    }
+}
+
+// main part
 front_side();
-night_vision_with_nape();
+night_vision_with_nape_and_holes();
+
