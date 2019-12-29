@@ -3,36 +3,38 @@
     By dotnetmobile@gmail.com December 2019 
 */
 
-camera_diameter = 16;
+camera_diameter = 16.5;
 
-ir_light_diameter = 20;
-ir_small_diameter = 10;
+big_circle_diameter = 20;
+small_circle_diameter = 9;
 
-x_pos_ir = 30;
-y_pos_ir = 0;
+big_circle_x_pos = 30;
+big_circle_y_pos = 0;
 
-x_pos_ir_small = x_pos_ir - ir_light_diameter / 2;
-y_pos_ir_small = 10;
+//small_circle_x_pos = big_circle_x_pos - big_circle_diameter / 2;
+small_circle_x_pos = 20.5;
+small_circle_y_pos = 10;
 
-x_pos_camera = 0;
-y_pos_camera = 0;
+camera_x_pos = 0;
+camera_y_pos = 0;
 
 // back side
-width_backside = 80;
-height_backside = 25;
+backside_width = 80;
+backside_height = 25;
 deepth_backside = 20;
-offset_x_backside = -width_backside/2;
-offset_y_backside = -height_backside/2;
-offset_z_backside = 0;
+backside_offset_x = -backside_width/2;
+backside_offset_y = -backside_height/2;
+//backside_offset_z = -18;
+backside_offset_z = 0;
 
-map_cube_x = 33;
-map_cube_y = 16;
-map_cube_z = 8;
+map_cube_x = 34;
+map_cube_y = 8;
+map_cube_z = 9;
 
 irColor = "green";
 cameraColor = "green";
 
-extrude_height = 15;
+backside_extrude_height = 15;
 
 module roundedRectangle(width, height)  
 {
@@ -44,21 +46,21 @@ module irSensors()
 {
     union()
     {
-        // large circles
-        translate([x_pos_ir,y_pos_ir,0])
+        // big circles
+        translate([big_circle_x_pos,big_circle_y_pos,0])
         color(irColor)
-        circle(d=ir_light_diameter);
+        circle(d=big_circle_diameter);
         
         // small circles
-        translate([0.9*x_pos_ir_small, 0.5*y_pos_ir_small, 0]) 
+        translate([0.95*small_circle_x_pos, 0.7*small_circle_y_pos, 0]) 
         color(irColor)
-        circle(d=ir_small_diameter);
+        circle(d=small_circle_diameter);
     }
 }
 
 module camera()
 {
-    translate([x_pos_camera, y_pos_camera, 0]) 
+    translate([camera_x_pos, camera_y_pos, 0]) 
     color(cameraColor)
     circle(d=camera_diameter);
 }
@@ -76,8 +78,8 @@ module front_side()
     {
         linear_extrude(height=2)
         color("green")
-        translate([offset_x_backside, offset_y_backside, 1]) 
-        roundedRectangle(width_backside, height_backside);
+        translate([backside_offset_x, backside_offset_y, 1]) 
+        roundedRectangle(backside_width, backside_height);
         
         linear_extrude(height=8) 
         night_vision_camera();
@@ -86,54 +88,66 @@ module front_side()
 
 module slots()
 {
-    translate([offset_x_backside-6,offset_y_backside+10,offset_z_backside])
+    translate([backside_offset_x-6,backside_offset_y+10,backside_offset_z])
     cube([5,4,3]);
-    translate([-offset_x_backside,offset_y_backside+10,offset_z_backside])
+    translate([-backside_offset_x,backside_offset_y+10,backside_offset_z])
     cube([5,4,3]);
 }
 
-module clipsing_pilar()
+module twin_pillars()
 {
-    translate([offset_x_backside-2,offset_y_backside-2,2])
+    translate([backside_offset_x-2,backside_offset_y-2,2])
     cube([4,4,16]);
-    translate([-offset_x_backside-2,offset_y_backside-2,2])
+    translate([-backside_offset_x-2,backside_offset_y-2,2])
     cube([4,4,16]);
 }
 
 module clipsing_pilars()
 {
-    clipsing_pilar();
+    twin_pillars();
     mirror([0,1,0])
-    clipsing_pilar();
+    twin_pillars();
+}
+
+module backside_slots()
+{
+    translate([backside_offset_x/2+10, backside_offset_y+2, 0])
+        cube([3,20,25]);
+    translate([-backside_offset_x/2-12, backside_offset_y+2, 0])
+        cube([3,20,25]);
 }
 
 module back_side()
 {
     difference()
-    {
-        translate([offset_x_backside-2,offset_y_backside-2,0])
+    {   
+        // outside     
+        translate([backside_offset_x-2,backside_offset_y-2,0])
         scale(1.2)
         color("blue")
-        linear_extrude(height=extrude_height)
-        roundedRectangle(width_backside-10, height_backside);
+        linear_extrude(height=backside_extrude_height)
+        roundedRectangle(backside_width-10, backside_height);
 
-        scale(1)
+        // inside
+        scale(1.02)
         color("green")
-        linear_extrude(height=extrude_height)
-        translate([offset_x_backside, offset_y_backside, 0])
-        roundedRectangle(width_backside, height_backside);
+        linear_extrude(height=backside_extrude_height)
+        translate([backside_offset_x, backside_offset_y, 0])
+        roundedRectangle(backside_width, backside_height);
+        
+        backside_slots();
     }
     // internal pilars for stopping front-side when clipsing it
     union()
     {
         clipsing_pilars();
-        mirror([1,0,0]) clisping_pilars();
+        mirror([1,0,0]) clipsing_pilars();
     }
 }
 
 module single_support()
 {
-    translate([x_pos_ir,y_pos_ir,extrude_height-5])
+    translate([big_circle_x_pos,big_circle_y_pos,backside_extrude_height-5])
     cylinder(5,r=4);
 }
 
@@ -145,7 +159,7 @@ module back_side_supports()
 
 module back_side_case()
 {
-    translate([0,0,offset_z_backside]) union()
+    translate([0,0,backside_offset_z]) union()
     {
         back_side();
 
@@ -155,7 +169,7 @@ module back_side_case()
 
 module extern_map_cube()
 {
-    translate([-map_cube_x/2-4,offset_y_backside*2.6,offset_z_backside+3]) 
+    translate([-map_cube_x/2-4,backside_offset_y*1.92,backside_offset_z+3]) 
     {
         color("red")
         scale(1.2)
@@ -165,7 +179,7 @@ module extern_map_cube()
 
 module intern_map_cube()
 {
-        translate([-map_cube_x/2 -4 + 3.5,offset_y_backside*2.7,offset_z_backside+5]) 
+        translate([-map_cube_x/2 -4 + 3.5,backside_offset_y*2.7,backside_offset_z+5]) 
         {
             cube([map_cube_x,map_cube_y*2.5,map_cube_z*0.7]);
         }
@@ -206,6 +220,8 @@ module night_vision_with_nape_and_holes()
 }
 
 // main part
-front_side();
+//front_side();
+backside_offset_z = -18;
+mirror([0,0,1])
 night_vision_with_nape_and_holes();
 
