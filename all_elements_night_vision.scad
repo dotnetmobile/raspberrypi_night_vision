@@ -132,24 +132,35 @@ module back_rotation()
     }
 }
 
+module front_side_easy_extractors()
+{
+    translate([backside_offset_x-6,backside_offset_y+10,backside_offset_z])
+    cube([5,4,4]);
+    translate([-backside_offset_x,backside_offset_y+10,backside_offset_z])
+    cube([5,4,4]);
+}
 
 module back_side()
 {
     difference()
-    {   
-        // outside     
-        translate([backside_offset_x-2,backside_offset_y-2,0])
-        scale(1.2)
-        color("blue")
-        linear_extrude(height=backside_extrude_height)
-        roundedRectangle(backside_width-10, backside_height);
+    {
+        difference()
+        {   
+            // outside     
+            translate([backside_offset_x-2,backside_offset_y-2,0])
+            scale(1.2)
+            color("blue")
+            linear_extrude(height=backside_extrude_height)
+            roundedRectangle(backside_width-10, backside_height);
 
-        // inside
-        scale(1.02)
-        color("green")
-        linear_extrude(height=backside_extrude_height)
-        translate([backside_offset_x, backside_offset_y, 0])
-        roundedRectangle(backside_width, backside_height);        
+            // inside
+            scale(1.02)
+            color("green")
+            linear_extrude(height=backside_extrude_height)
+            translate([backside_offset_x, backside_offset_y, 0])
+            roundedRectangle(backside_width, backside_height);        
+        }
+        front_side_easy_extractors();
     }
     // internal pilars for stopping front-side when clipsing it
     union()
@@ -185,19 +196,19 @@ module back_side_case()
 
 module extern_map_cube()
 {
-    translate([-map_cube_x/2-4,backside_offset_y*1.92,backside_offset_z+3]) 
+    translate([-map_cube_x/2-4,backside_offset_y*1.95,backside_offset_z+1]) 
     {
         color("red")
         scale(1.2)
-        cube([map_cube_x,map_cube_y,map_cube_z]);
+        cube([map_cube_x,map_cube_y,map_cube_z+2]);
     }
 }
 
 module intern_map_cube()
 {
-        translate([-map_cube_x/2 -4 + 3.5,backside_offset_y*2.7,backside_offset_z+5]) 
+        translate([-map_cube_x/2 -4 + 3.5,backside_offset_y*2.7,backside_offset_z+3]) 
         {
-            cube([map_cube_x,map_cube_y*2.5,map_cube_z*0.7]);
+            cube([map_cube_x,map_cube_y*2.5,map_cube_z*0.7+2]);
         }
 }
 
@@ -214,8 +225,8 @@ module case()
 {
     // open the case for including the map
     difference()
-    {   back_side_case();
-        
+    {   
+        back_side_case();        
         extern_map_cube();
     }
 }
@@ -351,5 +362,4 @@ module main()
 /*
     STL step 3: night vision case
 */
-    //general_overview_front_side();
-case_with_map();
+    case_with_map();
