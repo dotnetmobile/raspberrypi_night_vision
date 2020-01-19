@@ -10,6 +10,10 @@ foot_column_axis_h = 30;
 
 screw_hole_r = 5.5;
 
+thread_model = "G1/8-ext";
+thread_turns = 40;
+
+
 module foot()
 {
     union()
@@ -28,32 +32,31 @@ module foot()
     }
 }
 
-module foot_rotation_join()
+module rotation_cylinder()
 {
     difference()
     {
-        union() 
-        {
-            cylinder(r=foot_big_disc_r,3*foot_big_disc_h);
-            translate([-8,6,0])
-            cube([16,7,3*foot_big_disc_h]);
-
-            // extension axis
-            translate([0,25,1.5*foot_big_disc_h])
-            mirror([0,1,1])
-            cylinder(r=2.62,h=15);
-        }
-        
+        cylinder(r=foot_big_disc_r,3*foot_big_disc_h);
         // screw hole
         translate([0,0,-2])
-        #cylinder(r=screw_hole_r,h=12);
+        cylinder(r=screw_hole_r,h=12);
     }
 }
 
-//thread_model = "G1/2-ext";
+module foot_rotation_join()
+{
+    union() 
+    {
+        rotation_cylinder();
+        translate([-8,6,0])
+        cube([16,7,3*foot_big_disc_h]);
 
-thread_model = "G1/8-ext";
-thread_turns = 40;
+        // extension axis
+        translate([0,25,1.5*foot_big_disc_h])
+        mirror([0,1,1])
+        cylinder(r=2.62,h=15);
+    }        
+}
 
 module screw()
 {
@@ -80,18 +83,23 @@ module screw()
     foot_rotation_join();
 */
 
-module general_overview()
+module general_overview_foot()
 {
     // General overview of all elements
     foot();
 
+    // rotation join
     translate([0,4.5,foot_rotation_join_z_offset])
     mirror([0,1,1])
     foot_rotation_join();
+
+    // screw
+    /*
+    translate([0,10,foot_rotation_join_z_offset])
+    mirror([0,1,1])
+    screw();
+    */
 }
 
-general_overview();
+general_overview_foot();
 
-translate([0,10,foot_rotation_join_z_offset])
-mirror([0,1,1])
-screw();

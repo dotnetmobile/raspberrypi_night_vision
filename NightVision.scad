@@ -21,7 +21,6 @@ camera_y_pos = 0;
 // back side
 backside_width = 80;
 backside_height = 25;
-deepth_backside = 20;
 backside_offset_x = -backside_width/2;
 backside_offset_y = -backside_height/2;
 //backside_offset_z = -18;
@@ -35,6 +34,22 @@ irColor = "green";
 cameraColor = "green";
 
 backside_extrude_height = 15;
+
+foot_big_disc_r = 10;
+foot_big_disc_h = 3;
+
+screw_hole_r = 5.5;
+
+module rotation_cylinder()
+{
+    difference()
+    {
+        cylinder(r=foot_big_disc_r,3*foot_big_disc_h);
+        // screw hole
+        translate([0,0,-2])
+        cylinder(r=screw_hole_r,h=12);
+    }
+}
 
 module roundedRectangle(width, height)  
 {
@@ -109,13 +124,23 @@ module clipsing_pilars()
     twin_pillars();
 }
 
-module backside_slots()
+module back_rotation()
 {
-    translate([backside_offset_x/2+10, backside_offset_y+2, 0])
-        cube([3,20,25]);
-    translate([-backside_offset_x/2-12, backside_offset_y+2, 0])
-        cube([3,20,25]);
+    translate([13,0,4+backside_height])
+    {
+        mirror([1,0,1])
+        {
+            translate([0,0,6*foot_big_disc_h])
+            rotation_cylinder();
+            rotation_cylinder();
+        }
+        translate([-27,-5,-13])
+        cube([9,10,5]);
+        translate([-9,-5,-13])
+        cube([9,10,5]);
+    }
 }
+
 
 module back_side()
 {
@@ -133,9 +158,7 @@ module back_side()
         color("green")
         linear_extrude(height=backside_extrude_height)
         translate([backside_offset_x, backside_offset_y, 0])
-        roundedRectangle(backside_width, backside_height);
-        
-        backside_slots();
+        roundedRectangle(backside_width, backside_height);        
     }
     // internal pilars for stopping front-side when clipsing it
     union()
@@ -143,6 +166,8 @@ module back_side()
         clipsing_pilars();
         mirror([1,0,0]) clipsing_pilars();
     }
+
+    back_rotation();
 }
 
 module single_support()
@@ -219,9 +244,13 @@ module night_vision_with_nape_and_holes()
     }
 }
 
-// main part
-//front_side();
-backside_offset_z = -18;
-mirror([0,0,1])
-night_vision_with_nape_and_holes();
+module general_overview_front_side()
+{
+    // main part
+    front_side();
+    backside_offset_z = -18;
+    mirror([0,0,1])
+    night_vision_with_nape_and_holes();
+}
 
+general_overview_front_side();
