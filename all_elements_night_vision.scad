@@ -20,7 +20,8 @@ camera_y_pos = 0;
 
 // back side
 backside_width = 80;
-backside_height = 25;
+//backside_height = 25;
+backside_height = 31;
 backside_offset_x = -backside_width/2;
 backside_offset_y = -backside_height/2;
 //backside_offset_z = -18;
@@ -114,9 +115,9 @@ module front_side()
 
 module twin_pillars()
 {
-    translate([backside_offset_x-2,backside_offset_y-2,4])
+    translate([backside_offset_x,backside_offset_y-4,4])
     cube([4,4,13]);
-    translate([-backside_offset_x-2,backside_offset_y-2,4])
+    translate([-backside_offset_x,backside_offset_y-4,4])
     cube([4,4,13]);
 }
 
@@ -129,7 +130,7 @@ module front_side_blockers()
 
 module back_rotation()
 {
-    translate([13,0,4+backside_height])
+    translate([13,0,backside_height-2])
     {
         mirror([1,0,1])
         {
@@ -146,9 +147,9 @@ module back_rotation()
 
 module front_side_easy_extractors()
 {
-    translate([backside_offset_x-6,backside_offset_y+10,backside_offset_z])
+    translate([backside_offset_x-6,backside_offset_y+14,backside_offset_z])
     cube([5,4,4]);
-    translate([-backside_offset_x,backside_offset_y+10,backside_offset_z])
+    translate([-backside_offset_x,backside_offset_y+14,backside_offset_z])
     cube([5,4,4]);
 }
 
@@ -170,18 +171,19 @@ module back_side()
             color("green")
             linear_extrude(height=backside_extrude_height)
             translate([backside_offset_x, backside_offset_y, 0])
-            roundedRectangle(backside_width, backside_height);        
+            roundedRectangle(backside_width, backside_height+2.5);
         }
         front_side_easy_extractors();
     }
     // internal pilars for stopping front-side when clipsing it
+    translate([0,1.5,0])
     union()
     {
         front_side_blockers();
         mirror([1,0,0]) front_side_blockers();
     }
-
-    back_rotation();
+    union()
+    back_rotation(); 
 }
 
 module single_support()
@@ -198,11 +200,18 @@ module camera_back_side_blockers()
 
 module back_side_case()
 {
-    translate([0,0,backside_offset_z]) union()
+    difference()
     {
-        back_side();
+        translate([0,0,backside_offset_z]) union()
+        {
+            back_side();
 
-        camera_back_side_blockers();
+            camera_back_side_blockers();
+        }
+        
+        // map exit
+        translate([-9, backside_offset_y-2, 15])
+        cube([18,2,8]);
     }
 }
 
@@ -224,14 +233,6 @@ module intern_map_cube()
         }
 }
 
-module map_extension()
-{
-    difference()
-    {
-        extern_map_cube();
-        intern_map_cube();
-    }
-}
 
 module case() 
 {
@@ -239,14 +240,7 @@ module case()
     difference()
     {   
         back_side_case();        
-        extern_map_cube();
     }
-}
-
-module case_with_map() 
-{
-    case();
-    map_extension();
 }
 
 module general_overview_front_side()
@@ -254,7 +248,7 @@ module general_overview_front_side()
     front_side();
     backside_offset_z = -18;
     mirror([0,0,1])
-    case_with_map();
+    case();
 }
 
 
@@ -315,7 +309,7 @@ module main()
     
     translate([-1*pivot_cylinder_h,0,-29.5])
     rotate([0,90,0])
-    #pivot_cylinder();
+    pivot_cylinder();
 }
 
 // The STL steps are used for generating each printing element
@@ -334,7 +328,7 @@ module main()
 /*
     STL step 3: night vision case
 
-    case_with_map();
+    case();
 */
 
 /*
@@ -343,4 +337,3 @@ module main()
 //    pivot_cylinder();
 
 main();
-//case_with_map();
