@@ -40,6 +40,13 @@ foot_big_disc_h = 3;
 
 screw_hole_r = 5.5;
 
+pivot_cylinder_h = 28;
+
+foot_z_offset = 0;
+foot_rotation_join_z_offset = 60;
+
+foot_column_axis_h = 30;
+
 module rotation_cylinder()
 {
     difference()
@@ -49,6 +56,11 @@ module rotation_cylinder()
         translate([0,0,-2])
         cylinder(r=screw_hole_r,h=12);
     }
+}
+
+module pivot_cylinder()
+{
+    cylinder(r=screw_hole_r-.9,h=pivot_cylinder_h);
 }
 
 module roundedRectangle(width, height)  
@@ -247,21 +259,6 @@ module general_overview_front_side()
 
 
 // ------------------------------------------------
-use <threadlib/threadlib.scad>
-
-foot_big_disc_r = 10;
-foot_big_disc_h = 3;
-
-foot_z_offset = 0;
-foot_rotation_join_z_offset = 60;
-
-foot_column_axis_h = 30;
-
-screw_hole_r = 5.5;
-
-thread_model = "G1/8-ext";
-thread_turns = 40;
-
 
 module foot()
 {
@@ -281,17 +278,6 @@ module foot()
     }
 }
 
-module rotation_cylinder()
-{
-    difference()
-    {
-        cylinder(r=foot_big_disc_r,3*foot_big_disc_h);
-        // screw hole
-        translate([0,0,-2])
-        cylinder(r=screw_hole_r,h=12);
-    }
-}
-
 module foot_rotation_join()
 {
     union() 
@@ -307,18 +293,6 @@ module foot_rotation_join()
     }        
 }
 
-module screw()
-{
-    thread(thread_model, turns=thread_turns);
-    specs = thread_specs(thread_model);
-    P = specs[0]; Rrot = specs[1]; Dsupport = specs[2];
-    section_profile = specs[3];
-    H = (thread_turns + 1) * P;
-    translate([0, 0, -P / 2])
-        cylinder(h=H, d=Dsupport, $fn=120);
-}
-
-
 module general_overview_foot()
 {
     // General overview of all elements
@@ -328,14 +302,8 @@ module general_overview_foot()
     translate([0,4.5,foot_rotation_join_z_offset])
     mirror([0,1,1])
     foot_rotation_join();
-
-    // screw
-    /*
-    translate([0,10,foot_rotation_join_z_offset])
-    mirror([0,1,1])
-    screw();
-    */
 }
+
 
 module main()
 {
@@ -344,6 +312,10 @@ module main()
     general_overview_foot();
 
     general_overview_front_side();
+    
+    translate([-1*pivot_cylinder_h,0,-29.5])
+    rotate([0,90,0])
+    #pivot_cylinder();
 }
 
 // The STL steps are used for generating each printing element
@@ -361,5 +333,14 @@ module main()
 
 /*
     STL step 3: night vision case
-*/
+
     case_with_map();
+*/
+
+/*
+    STL step 4: pivote cylinder
+*/
+//    pivot_cylinder();
+
+main();
+//case_with_map();
