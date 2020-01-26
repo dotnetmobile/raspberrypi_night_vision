@@ -1,12 +1,19 @@
-# Raspberry pi night vison case 
+# Raspberry pi night vison case
   by dotnetmobile@gmail.com
 ---
 
-Different perspectives of the infra red night vision case
+Different perspectives of the infra red night vision case.
 
-![Alt text](images/IR_night_vision_1.png{:height="250px" width="250px"}}?raw=true "View 1")
-![Alt text](images/IR_night_vision_2.png=250x250?raw=true "View 2")
-![Alt text](images/IR_night_vision_3.png=250x250?raw=true "View 3")
-![Alt text](images/IR_night_vision_4.png=250x250?raw=true "View 4")
-![Alt text](images/IR_night_vision_4.png=250x250?raw=true "View 5")
-![Alt text](images/IR_night_vision_4.png=250x250?raw=true "View 6")
+3D printing files are available in the **stl** source code directory.
+
+Use "support" for printing following files:
+
+* step2_foot_rotation_join.stl
+* step3_case_with_map.stl
+
+<img src="images/IR_night_vision_1.png" width="250" height="250"/>
+<img src="images/IR_night_vision_2.png" width="250" height="250"/>
+<img src="images/IR_night_vision_3.png" width="250" height="250"/>
+<img src="images/IR_night_vision_4.png" width="250" height="250"/>
+<img src="images/IR_night_vision_5.png" width="250" height="250"/>
+<img src="images/IR_night_vision_6.png" width="250" height="250"/>
