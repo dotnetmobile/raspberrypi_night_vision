@@ -100,7 +100,7 @@ module night_vision_camera()
     camera();
 }
 
-module front_side()
+module front_side_SAV()
 {   
     difference() 
     {
@@ -108,6 +108,20 @@ module front_side()
         translate([backside_offset_x, backside_offset_y, 1]) 
         roundedRectangle(backside_width, backside_height);
         
+        linear_extrude(height=8) 
+        night_vision_camera();
+    }
+}
+
+module front_side()
+{   
+    difference() 
+    {
+        linear_extrude(height=2.5)
+        translate([backside_offset_x, backside_offset_y, 1]) 
+        roundedRectangle(backside_width, backside_height+2);
+        
+        translate([0,4,0])
         linear_extrude(height=8) 
         night_vision_camera();
     }
@@ -198,23 +212,6 @@ module camera_back_side_blockers()
     mirror([1,0,0]) single_support();
 }
 
-module back_side_case()
-{
-    difference()
-    {
-        translate([0,0,backside_offset_z]) union()
-        {
-            back_side();
-
-            camera_back_side_blockers();
-        }
-        
-        // map exit
-        translate([-9, backside_offset_y-2, 15])
-        cube([18,2,8]);
-    }
-}
-
 module extern_map_cube()
 {
     translate([-map_cube_x/2-4,backside_offset_y*1.95,backside_offset_z+1]) 
@@ -233,13 +230,20 @@ module intern_map_cube()
         }
 }
 
-
-module case() 
+module case()
 {
-    // open the case for including the map
     difference()
-    {   
-        back_side_case();        
+    {
+        translate([0,0,backside_offset_z]) union()
+        {
+            back_side();
+
+            camera_back_side_blockers();
+        }
+        
+        // map exit
+        translate([-9, backside_offset_y-2, 15])
+        cube([18,2,8]);
     }
 }
 
@@ -333,7 +337,13 @@ module main()
 
 /*
     STL step 4: pivote cylinder
+
+    pivot_cylinder();
 */
-//    pivot_cylinder();
+
+/*
+    STL step 5: front side
+*/
+//    front_side();
 
 main();
