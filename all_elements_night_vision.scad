@@ -249,6 +249,8 @@ module case()
 
 module general_overview_front_side()
 {
+    translate([0,0,10])
+    rotate([0,0,0])
     front_side();
     backside_offset_z = -18;
     mirror([0,0,1])
